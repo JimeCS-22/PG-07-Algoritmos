@@ -640,7 +640,27 @@ public class BTree<T extends Comparable<T>> implements Tree<T> {
         return totalLeaves(node.left) + totalLeaves(node.right);
     }
 
-
+    /**
+     * 11. public BTree bTreesSum (BTree btree1, BTree btree2):
+     * Devuelve un nuevo árbol binario simple que suma el contenido de los nodos
+     * de los árboles binarios 1 y 2 según corresponda. Si el nodo no existe
+     * en alguno de los árboles, conserva el valor del nodo existente:
+     */
+//    public BTree<T> bTreeSum(BTree<T> btree1, BTree<T> btree2){
+//        BTree<T> bTreeSum = new BTree<>();
+//        bTreeSum = bTreeSum.bTreeSum(btree1, btree2);
+//        return bTreeSum;
+//    }
+//
+//    public BTreeNode<T> bTreeSum(BTreeNode<T> node1, BTreeNode<T> node2,  BTreeNode<T> nodeSum){
+//        if(node1 == null) return node2;
+//        if(node2 == null) return node1;
+//        if(node1 != null && node2 != null) {wa
+//            BTreeNode<T> newNode = new BTreeNode(node1.data + node2.data);
+//
+//        }
+//
+//    }
 
 
 
