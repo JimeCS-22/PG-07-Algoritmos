@@ -1,6 +1,7 @@
 package pg07algoritmos.model.linkedList;
 
 import pg07algoritmos.model.Node;
+import pg07algoritmos.util.Utility;
 
 public class CircularLinkedList<T> implements List<T> {
 
@@ -209,7 +210,7 @@ public class CircularLinkedList<T> implements List<T> {
             for (int j = i+1; j <= n; j++) {
                 Node<T> nodeI = getNode(i);
                 Node<T> nodeJ = getNode(j);
-                if (util.Utility.compare(nodeJ.data, nodeI.data) < 0) {
+                if (Utility.compare(nodeJ.data, nodeI.data) < 0) {
                     T temp = nodeI.data;
                     nodeI.data = nodeJ.data;
                     nodeJ.data = temp;
