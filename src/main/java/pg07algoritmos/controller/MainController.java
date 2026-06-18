@@ -1,11 +1,19 @@
 package pg07algoritmos.controller;
 
+import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
+import pg07algoritmos.model.Node;
+import pg07algoritmos.model.Queue.QueueException;
 import pg07algoritmos.model.Tree.*;
+import pg07algoritmos.model.graph.AdjacencyListGraph;
+import pg07algoritmos.model.graph.AdjacencyMatrixGraph;
+import pg07algoritmos.model.graph.LinkedGraph;
+import pg07algoritmos.model.linkedList.ListException;
+import pg07algoritmos.model.stack.StackException;
 
 import java.util.List;
 import java.util.Random;
@@ -14,23 +22,17 @@ import java.util.Random;
 public class MainController {
 
     @FXML
-    private ComboBox cbGrafos;
+    private ComboBox<String> cbGrafos;
     @FXML
-    private ComboBox cbTree;
+    private ComboBox<String> cbTree;
     @FXML
     private Canvas canvasTree;
-    @FXML
-    private Button btnPlayBTree;
-    @FXML
-    private Canvas canvasBTree;
     @FXML
     private Button addAristas;
     @FXML
     private TabPane mainTabs;
     @FXML
     private Button generateTree;
-    @FXML
-    private Button btnPlayBst;
     @FXML
     private TextArea txtOutput;
 
@@ -42,10 +44,575 @@ public class MainController {
     private Random random;
     @FXML
     private Button btnReset;
+    //---------graph--------
+
+    @FXML
+    private Button btnAddEdgesGraph;
+    @FXML
+    private Button btnGenerateGraph;
+    @FXML
+    private Button btnRestartGraph;
+    @FXML
+    private CheckBox checkBoxIsDirected;
+    @FXML
+    private Canvas canvasGraph;
+    @FXML
+    private TextArea txtGraph;
+    private AdjacencyListGraph<Integer> graphAdjList;
+    private AdjacencyMatrixGraph<Integer> graphMatrix;
+    private LinkedGraph<Integer> graphLinked;
+    @FXML
+    private TextField txtElement;
+    private final double NODE_RADIUS = 20;
+    private GraphicsContext gcGraph;
+    @FXML
+    private TextField txtEdges;
 
     @FXML
     public void initialize(){
+      setupGraph();
+      setupTree();
+    }
 
+    ///----------------GRAPH----------------
+    private void setupGraph(){
+        gcGraph = canvasGraph.getGraphicsContext2D();
+
+        random = new Random();
+
+        graphAdjList = new AdjacencyListGraph<>(15,checkBoxIsDirected.isSelected());
+        graphMatrix = new AdjacencyMatrixGraph<>(15,checkBoxIsDirected.isSelected());
+        graphLinked = new LinkedGraph<>(checkBoxIsDirected.isSelected());
+
+        cbGrafos.getItems().addAll(
+                "Adjacency Matrix",
+                "Adjacency List",
+                "Linked Graph"
+        );
+        txtElement.setText("1");
+        cbGrafos.getSelectionModel().selectFirst();
+        btnAddEdgesGraph.setOnAction(e -> {
+            try {
+                addEdges();
+            } catch (ListException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        btnGenerateGraph.setOnAction(e-> {
+            try {
+                generateRandomGraph();
+            } catch (QueueException ex) {
+                throw new RuntimeException(ex);
+            } catch (ListException ex) {
+                throw new RuntimeException(ex);
+            } catch (StackException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        btnRestartGraph.setOnAction(actionEvent -> restartGraph());
+    }
+
+    private void restartGraph() {
+        if (graphMatrix != null) graphMatrix.clear();
+        if (graphLinked != null) graphLinked.clear();
+        if (graphAdjList != null) graphAdjList.clear();
+        canvasGraph.getGraphicsContext2D().clearRect(0, 0, canvasGraph.getWidth(), canvasGraph.getHeight());
+    }
+
+    private void addEdges() throws ListException {
+        String tipo = cbGrafos.getValue().toString();
+        String text = txtEdges.getText().trim();
+        switch (tipo){
+
+            case "Adjacency Matrix":
+                // Parsear aristas (u-v, x-y)
+
+                if (!text.isEmpty()) {
+                    String[] pairs = text.split(",");
+                    for (String pair : pairs) {
+                        String[] parts = pair.trim().split("-");
+                        if (parts.length == 2) {
+                            graphMatrix.addEdge(Integer.parseInt(parts[0]) , Integer.parseInt(parts[1]));
+                        }
+                    }
+                }
+
+                drawGraphAnimated();
+                break;
+
+            case "Adjacency List":
+                // Parsear aristas (u-v, x-y)
+
+                if (!text.isEmpty()) {
+                    String[] pairs = text.split(",");
+                    for (String pair : pairs) {
+                        String[] parts = pair.trim().split("-");
+                        if (parts.length == 2) {
+                            graphAdjList.addEdge(Integer.parseInt(parts[0]) , Integer.parseInt(parts[1]));
+                        }
+                    }
+                }
+                drawAdjList();
+                break;
+
+            case "Linked Graph":
+                // Parsear aristas (u-v, x-y)
+
+                if (!text.isEmpty()) {
+                    String[] pairs = text.split(",");
+                    for (String pair : pairs) {
+                        String[] parts = pair.trim().split("-");
+                        if (parts.length == 2) {
+                            graphLinked.addEdge(Integer.parseInt(parts[0]) , Integer.parseInt(parts[1]));
+                        }
+                    }
+                }
+                drawLinked();
+                break;
+        }
+    }
+
+    private void generateRandomGraph() throws QueueException, ListException, StackException {
+        graphAdjList = new AdjacencyListGraph<>(15,checkBoxIsDirected.isSelected());
+        graphMatrix = new AdjacencyMatrixGraph<>(15,checkBoxIsDirected.isSelected());
+        graphLinked = new LinkedGraph<>(checkBoxIsDirected.isSelected());
+
+        String tipo = cbGrafos.getValue().toString();
+
+        switch (tipo){
+
+            case "Adjacency Matrix":
+                generateMatrix();
+                break;
+
+            case "Adjacency List":
+                generateAdjList();
+                break;
+
+            case "Linked Graph":
+                generateLinked();
+                break;
+        }
+
+    }
+    private void generateMatrix() throws ListException, QueueException, StackException {
+        graphMatrix.clear();
+
+        for (int i = 1; i <= 10; i++) {
+            graphMatrix.addVertex(i);
+        }
+
+        // Agregar aristas con pesos
+        graphMatrix.addEdgeAndWeight(1, 5, 3);
+        graphMatrix.addEdgeAndWeight(2, 4, 6);
+        graphMatrix.addEdgeAndWeight(2, 6, 5);
+        graphMatrix.addEdgeAndWeight(3, 4, 2);
+        graphMatrix.addEdgeAndWeight(3, 7, 8);
+        graphMatrix.addEdgeAndWeight(4, 5, 9);
+
+        drawMatrixGraph();
+
+        showMatrixGraphMethods();
+    }
+
+    private void generateAdjList() throws ListException, QueueException, StackException {
+        graphAdjList.clear();
+
+        for (int i = 1; i <= 10; i++) {
+            graphAdjList.addVertex(i);
+        }
+
+        // Agregar aristas con pesos
+        graphAdjList.addEdgeAndWeight(1, 5, 3);
+        graphAdjList.addEdgeAndWeight(2, 4, 6);
+        graphAdjList.addEdgeAndWeight(2, 6, 5);
+        graphAdjList.addEdgeAndWeight(3, 4, 2);
+        graphAdjList.addEdgeAndWeight(3, 7, 8);
+        graphAdjList.addEdgeAndWeight(4, 5, 9);
+
+        drawAdjList();
+
+        showAdjListMethods();
+    }
+
+    private void generateLinked() throws ListException, QueueException, StackException {
+        graphLinked.clear();
+
+        for (int i = 1; i <= 10; i++) {
+            graphLinked.addVertex(i);
+        }
+
+        // Agregar aristas con pesos
+        graphLinked.addEdgeAndWeight(1, 5, 3);
+        graphLinked.addEdgeAndWeight(2, 4, 6);
+        graphLinked.addEdgeAndWeight(2, 6, 5);
+        graphLinked.addEdgeAndWeight(3, 4, 2);
+        graphLinked.addEdgeAndWeight(3, 7, 8);
+        graphLinked.addEdgeAndWeight(4, 5, 9);
+
+        drawLinked();
+
+        showgraphLinkedMethods();
+    }
+    private void drawMatrixGraph() {
+        gcGraph.clearRect(0, 0, canvasGraph.getWidth(), canvasGraph.getHeight());
+
+        drawGraphAnimated();
+    }
+
+    private void drawAdjList() {
+
+        gcGraph.clearRect(0, 0, canvasGraph.getWidth(), canvasGraph.getHeight());
+
+        drawGraphAnimatedL();
+    }
+
+    private void drawGraphAnimatedL() {
+        GraphicsContext gc = canvasGraph.getGraphicsContext2D();
+        gc.clearRect(0, 0, canvasGraph.getWidth(), canvasGraph.getHeight());
+
+        double centerX = canvasGraph.getWidth() / 2;
+        double centerY = canvasGraph.getHeight() / 2;
+        double radius = Math.min(centerX, centerY) - 50;
+
+        int size = graphAdjList.counter;
+        double[][] positions = new double[size][2];
+        for (int i = 0; i < size; i++) {
+            double angle = 2 * Math.PI * i / size;
+            positions[i][0] = centerX + radius * Math.cos(angle);
+            positions[i][1] = centerY + radius * Math.sin(angle);
+        }
+
+        new AnimationTimer() {
+            private long lastUpdate = 0;
+            private int edgeIndex = 0;
+            private int frameDelay = 15;
+
+            @Override
+            public void handle(long now) {
+                if (now - lastUpdate < 50_000_000 * frameDelay) return;
+                lastUpdate = now;
+
+                gcGraph.clearRect(0, 0, canvasGraph.getWidth(), canvasGraph.getHeight());
+
+                for (int i = 0; i < size; i++) {
+                    var v = graphAdjList.getVertexByIndex(i);
+                    if (v == null) continue;
+
+                    gcGraph.setFill(Color.web("#1e293b"));
+                    gcGraph.fillOval(positions[i][0] - NODE_RADIUS, positions[i][1] - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
+                    gcGraph.setStroke(Color.web("#4ade80"));
+                    gcGraph.strokeOval(positions[i][0] - NODE_RADIUS, positions[i][1] - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
+                    gcGraph.setFill(Color.WHITE);
+                    gcGraph.fillText(String.valueOf(graphAdjList.getVertexByIndex(i).data), positions[i][0] - 8, positions[i][1] + 5);
+                }
+
+                gcGraph.setStroke(Color.web("#60a5fa"));
+                gcGraph.setLineWidth(2);
+                int count = 0;
+                for (int i = 0; i < size; i++) {
+                    for (int j = 0; j < size; j++) {
+                        try {
+                            if (graphAdjList.containsEdge(graphAdjList.getVertexByIndex(i).data, graphAdjList.getVertexByIndex(j).data)) {
+                                if (count <= edgeIndex) {
+                                    if (graphAdjList.directed) {
+                                        drawArrow(gcGraph, positions[i][0], positions[i][1], positions[j][0], positions[j][1]);
+                                    } else {
+                                        gcGraph.strokeLine(positions[i][0], positions[i][1], positions[j][0], positions[j][1]);
+                                    }
+                                }
+                                count++;
+                            }
+                        } catch (Exception ignored) {
+                        }
+                    }
+                }
+
+                edgeIndex++;
+                if (edgeIndex >= count) stop();
+            }
+        }.start();
+    }
+
+    private void drawLinked() throws ListException {
+
+        gcGraph.clearRect(0, 0, canvasGraph.getWidth(), canvasGraph.getHeight());
+
+        drawGraphAnimatedLi();
+    }
+
+    private void drawGraphAnimatedLi() throws ListException {
+        GraphicsContext gc = canvasGraph.getGraphicsContext2D();
+        gc.clearRect(0, 0, canvasGraph.getWidth(), canvasGraph.getHeight());
+
+        double centerX = canvasGraph.getWidth() / 2;
+        double centerY = canvasGraph.getHeight() / 2;
+        double radius = Math.min(centerX, centerY) - 50;
+
+        int size = graphLinked.size();
+        double[][] positions = new double[size][2];
+        for (int i = 0; i < size; i++) {
+            double angle = 2 * Math.PI * i / size;
+            positions[i][0] = centerX + radius * Math.cos(angle);
+            positions[i][1] = centerY + radius * Math.sin(angle);
+        }
+
+        new AnimationTimer() {
+            private long lastUpdate = 0;
+            private int edgeIndex = 0;
+            private int frameDelay = 15;
+
+            @Override
+            public void handle(long now) {
+                if (now - lastUpdate < 50_000_000 * frameDelay) return;
+                lastUpdate = now;
+
+                gcGraph.clearRect(0, 0, canvasGraph.getWidth(), canvasGraph.getHeight());
+
+                for (int i = 0; i < size; i++) {
+                    Node<Integer> v = null;
+                    try {
+                        v = graphLinked.getNodeByIndex(i);
+                    } catch (ListException e) {
+                        throw new RuntimeException(e);
+                    }
+                    if (v == null) continue;
+
+                    gcGraph.setFill(Color.web("#1e293b"));
+                    gcGraph.fillOval(positions[i][0] - NODE_RADIUS, positions[i][1] - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
+                    gcGraph.setStroke(Color.web("#4ade80"));
+                    gcGraph.strokeOval(positions[i][0] - NODE_RADIUS, positions[i][1] - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
+                    gcGraph.setFill(Color.WHITE);
+                    try {
+                        gcGraph.fillText(String.valueOf(graphLinked.getNodeByIndex(i).data), positions[i][0] - 8, positions[i][1] + 5);
+                    } catch (ListException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                gcGraph.setStroke(Color.web("#60a5fa"));
+                gcGraph.setLineWidth(2);
+                int count = 0;
+                for (int i = 0; i < size; i++) {
+                    for (int j = 0; j < size; j++) {
+                        try {
+                            if (graphLinked.containsEdge(graphLinked.getNodeByIndex(i).data, graphLinked.getNodeByIndex(j).data)) {
+                                if (count <= edgeIndex) {
+                                    if (graphLinked.directed) {
+                                        drawArrow(gcGraph, positions[i][0], positions[i][1], positions[j][0], positions[j][1]);
+                                    } else {
+                                        gcGraph.strokeLine(positions[i][0], positions[i][1], positions[j][0], positions[j][1]);
+                                    }
+                                }
+                                count++;
+                            }
+                        } catch (Exception ignored) {
+                        }
+                    }
+                }
+
+                edgeIndex++;
+                if (edgeIndex >= count) stop();
+            }
+        }.start();
+    }
+
+
+    private void showError(String msg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setContentText(msg);
+        alert.show();
+    }
+    private void showMatrixGraphMethods() throws ListException, StackException, QueueException {
+
+        if (txtElement == null)
+            showError("Ingresa un número");
+        int element = Integer.parseInt(txtElement.getText());
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("=====Adjancency Matrix Graph =====\n\n");
+
+        sb.append(graphMatrix.toString()).append("\n");
+
+        sb.append("1. Recorrido dfs()\n");
+        sb.append(graphMatrix.dfs()).append("\n");
+
+        sb.append("2. Recorrido bfs()\n");
+        sb.append(graphMatrix.bfs()).append("\n");
+
+        sb.append("3. getVertexDegree("+element +")\n");
+        sb.append(graphMatrix.getVertexDegree(element)).append("\n");
+
+        sb.append("4.  getGraphDegree()\n");
+        sb.append(graphMatrix.getGraphDegree()).append("\n");
+
+        sb.append("5. totalEdges()\n");
+        sb.append(graphMatrix.totalEdges()).append("\n");
+
+        sb.append("6. totalEdges("+element +")\n");
+        sb.append(graphMatrix.totalEdges(element)).append("\n");
+
+        sb.append("7. getEdges("+element +")\n");
+        sb.append(graphMatrix.getEdges(element)).append("\n");
+
+        txtGraph.setText(sb.toString());
+
+    }
+    private void showAdjListMethods() throws ListException, StackException, QueueException {
+        if (txtElement == null)
+            showError("Ingresa un número");
+        int element = Integer.parseInt(txtElement.getText());
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("=====Adjancency List Graph =====\n\n");
+
+        sb.append(graphAdjList.toString()).append("\n");
+
+        sb.append("1. Recorrido dfs()\n");
+        sb.append(graphAdjList.dfs()).append("\n");
+
+        sb.append("2. Recorrido bfs()\n");
+        sb.append(graphAdjList.bfs()).append("\n");
+
+        sb.append("3. getVertexDegree("+element +")\n");
+        sb.append(graphAdjList.getVertexDegree(element)).append("\n");
+
+        sb.append("4.  getGraphDegree()\n");
+        sb.append(graphAdjList.getGraphDegree()).append("\n");
+
+        sb.append("5. totalEdges()\n");
+        sb.append(graphAdjList.totalEdges()).append("\n");
+
+        sb.append("6. totalEdges("+element +")\n");
+        sb.append(graphAdjList.totalEdges(element)).append("\n");
+
+        sb.append("7. getEdges("+element +")\n");
+        sb.append(graphAdjList.getEdges(element)).append("\n");
+
+        txtGraph.setText(sb.toString());
+
+    }
+
+    private void showgraphLinkedMethods() throws ListException, StackException, QueueException {
+
+        if (txtElement == null)
+            showError("Ingresa un número");
+        int element = Integer.parseInt(txtElement.getText());
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("=====Linked Graph =====\n\n");
+
+        sb.append(graphLinked.toString()).append("\n");
+
+        sb.append("1. Recorrido dfs()\n");
+        sb.append(graphLinked.dfs()).append("\n");
+
+        sb.append("2. Recorrido bfs()\n");
+        sb.append(graphLinked.bfs()).append("\n");
+
+        sb.append("3. getVertexDegree("+element +")\n");
+        sb.append(graphLinked.getVertexDegree(element)).append("\n");
+
+        sb.append("4.  getGraphDegree()\n");
+        sb.append(graphLinked.getGraphDegree()).append("\n");
+
+        sb.append("5. totalEdges()\n");
+        sb.append(graphLinked.totalEdges()).append("\n");
+
+        sb.append("6. totalEdges("+element +")\n");
+        sb.append(graphLinked.totalEdges(element)).append("\n");
+
+        sb.append("7. getEdges("+element +")\n");
+        sb.append(graphLinked.getEdges(element)).append("\n");
+
+        txtGraph.setText(sb.toString());
+
+    }
+
+    private void drawGraphAnimated() {
+        GraphicsContext gc = canvasGraph.getGraphicsContext2D();
+        gc.clearRect(0, 0, canvasGraph.getWidth(), canvasGraph.getHeight());
+
+        double centerX = canvasGraph.getWidth() / 2;
+        double centerY = canvasGraph.getHeight() / 2;
+        double radius = Math.min(centerX, centerY) - 50;
+
+        int size = graphMatrix.counter;
+        double[][] positions = new double[size][2];
+        for (int i = 0; i < size; i++) {
+            double angle = 2 * Math.PI * i / size;
+            positions[i][0] = centerX + radius * Math.cos(angle);
+            positions[i][1] = centerY + radius * Math.sin(angle);
+        }
+
+        new AnimationTimer() {
+            private long lastUpdate = 0;
+            private int edgeIndex = 0;
+            private int frameDelay = 15;
+
+            @Override
+            public void handle(long now) {
+                if (now - lastUpdate < 50_000_000 * frameDelay) return;
+                lastUpdate = now;
+
+                gcGraph.clearRect(0, 0, canvasGraph.getWidth(), canvasGraph.getHeight());
+
+                for (int i = 0; i < size; i++) {
+                    var v = graphMatrix.getVertexByIndex(i);
+                    if (v == null) continue;
+
+                    gcGraph.setFill(Color.web("#1e293b"));
+                    gcGraph.fillOval(positions[i][0] - NODE_RADIUS, positions[i][1] - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
+                    gcGraph.setStroke(Color.web("#4ade80"));
+                    gcGraph.strokeOval(positions[i][0] - NODE_RADIUS, positions[i][1] - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
+                    gcGraph.setFill(Color.WHITE);
+                    gcGraph.fillText(String.valueOf(graphMatrix.getVertexByIndex(i).data), positions[i][0] - 8, positions[i][1] + 5);
+                }
+
+                gcGraph.setStroke(Color.web("#60a5fa"));
+                gcGraph.setLineWidth(2);
+                int count = 0;
+                for (int i = 0; i < size; i++) {
+                    for (int j = 0; j < size; j++) {
+                        try {
+                            if (graphMatrix.containsEdge(graphMatrix.getVertexByIndex(i).data, graphMatrix.getVertexByIndex(j).data)) {
+                                if (count <= edgeIndex) {
+                                    if (graphMatrix.directed) {
+                                        drawArrow(gcGraph, positions[i][0], positions[i][1], positions[j][0], positions[j][1]);
+                                    } else {
+                                        gcGraph.strokeLine(positions[i][0], positions[i][1], positions[j][0], positions[j][1]);
+                                    }
+                                }
+                                count++;
+                            }
+                        } catch (Exception ignored) {
+                        }
+                    }
+                }
+
+                edgeIndex++;
+                if (edgeIndex >= count) stop();
+            }
+        }.start();
+    }
+    //metodo aux para los grafos dirigidos
+    private void drawArrow(GraphicsContext gc, double x1, double y1, double x2, double y2) {
+        gc.strokeLine(x1, y1, x2, y2);
+        double angle = Math.atan2(y2 - y1, x2 - x1);
+        double arrowLength = 10;
+        double arrowAngle = Math.PI / 8;
+        double xArrow1 = x2 - arrowLength * Math.cos(angle - arrowAngle);
+        double yArrow1 = y2 - arrowLength * Math.sin(angle - arrowAngle);
+        double xArrow2 = x2 - arrowLength * Math.cos(angle + arrowAngle);
+        double yArrow2 = y2 - arrowLength * Math.sin(angle + arrowAngle);
+        gc.strokeLine(x2, y2, xArrow1, yArrow1);
+        gc.strokeLine(x2, y2, xArrow2, yArrow2);
+    }
+    //------------- TREE ---------------
+    private void setupTree(){
         gc = canvasTree.getGraphicsContext2D();
 
         random = new Random();
@@ -63,9 +630,6 @@ public class MainController {
         cbTree.getSelectionModel().selectFirst();
 
         generateTree.setOnAction(e->generateRandomTree());
-
-
-
     }
 
     private void generateRandomTree(){

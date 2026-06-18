@@ -190,7 +190,7 @@ public class AdjacencyListGraph<T extends Comparable<T>> extends AdjacencyMatrix
         return sb.toString();
     }
 
-    //TODO
+    //MÉTODOS PRACTICA EXAMEN 2
     public String dfs() throws GraphException, StackException, ListException {
         if (isEmpty()) throw new GraphException("Graph is empty");
 
@@ -394,6 +394,91 @@ public class AdjacencyListGraph<T extends Comparable<T>> extends AdjacencyMatrix
 
         return Integer.MAX_VALUE;
 
+    }
+    /*5. public int totalEdges (T element): Devuelve el número total de aristas que
+tiene el vértice del elemento dado.*/
+
+    public int totalEdges(T element) throws ListException {
+        if (isEmpty()) throw new ListException("Adjacency List Graph is Empty");
+
+        if (!containsVertex(element)) throw new ListException("Adjacency List Graph Not Contains Vertex");
+
+        int totalEdges = 0; //El va a devolver el numero de aristas
+
+        Vertex<T> vertex = getVertex(element);
+
+        if (!directed) {
+
+            Node<T> aux = vertex.headNode;
+
+            while (aux != null) {
+                totalEdges++;
+                aux = aux.neighbor;
+            }
+
+        } else {
+
+            // Aristas de salida
+            Node<T> aux = vertex.headNode;
+
+            while (aux != null) {
+                totalEdges++;
+                aux = aux.neighbor;
+            }
+
+            // Aristas de entrada
+            for (int i = 0; i < counter; i++) {
+
+                aux = vertexList[i].headNode;
+
+                while (aux != null) {
+
+                    if (equals(aux.data, element))
+                        totalEdges++;
+
+                    aux = aux.neighbor;
+                }
+            }
+        }
+
+        return totalEdges;
+    }
+    /*. public String getEdges (T element): Devuelve todas las aristas del vértice del
+elemento dado, Si el vértice no tiene aristas, deberá mostrar el mensaje: “The
+vertex has no edges”*/
+    public String getEdges(T element) throws ListException {
+
+        if (isEmpty())
+            throw new ListException("Adjacency List Graph is Empty");
+
+        if (!containsVertex(element))
+            throw new ListException("Adjacency List Graph Not Contains Vertex");
+
+        Vertex<T> vertex = getVertex(element);
+
+        if (vertex.headNode == null)
+            return "The vertex has no edges";
+
+        StringBuilder edges = new StringBuilder("Edges of " + element + ": ");
+
+        Node<T> aux = vertex.headNode;
+
+        while (aux != null) {
+
+            edges.append("(")
+                    .append(element)
+                    .append("-")
+                    .append(aux.data);
+
+            if (aux.weight != null)
+                edges.append(", w=").append(aux.weight);
+
+            edges.append(") ");
+
+            aux = aux.neighbor;
+        }
+
+        return edges.toString();
     }
 
 }

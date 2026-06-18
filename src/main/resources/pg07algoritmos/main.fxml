@@ -2,6 +2,7 @@
 
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
@@ -10,6 +11,7 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -51,31 +53,43 @@
 
                <Tab text="Grafos">
                   <content>
-                     <SplitPane dividerPositions="0.3113482056256062" prefHeight="200.0" prefWidth="200.0">
+                     <SplitPane dividerPositions="0.20822837951301426" prefHeight="200.0" prefWidth="200.0">
                         <items>
-                           <VBox prefHeight="665.0" prefWidth="459.0" spacing="10.0" styleClass="panel">
+                           <VBox prefHeight="594.0" prefWidth="217.0" spacing="10.0" styleClass="panel">
                               <children>
                                  <Label styleClass="panel-title" text="Grafos">
                                     <font>
                                        <Font size="10.0" />
                                     </font>
                                  </Label>
+                              <Label styleClass="panel-title" text="Representación">
+                                 <font>
+                                    <Font size="10.0" />
+                                 </font>
+                              </Label>
                                  <HBox />
                                  <HBox prefHeight="36.0" prefWidth="289.0" spacing="10.0">
                                     <children>
                                        <ComboBox fx:id="cbGrafos" prefHeight="27.0" prefWidth="195.0" />
-                                       <Button fx:id="btnPlayBTree" mnemonicParsing="false" prefHeight="30.0" prefWidth="51.0" styleClass="btn-primary" text="▶" />
                                     </children>
                                  </HBox>
-                              <Button mnemonicParsing="false" prefHeight="39.0" prefWidth="190.0" text="Button" />
-                              <Button mnemonicParsing="false" prefHeight="38.0" prefWidth="190.0" text="Button" />
-                              <Button mnemonicParsing="false" prefHeight="38.0" prefWidth="190.0" text="Button" />
+                              <CheckBox fx:id="checkBoxIsDirected" mnemonicParsing="false" text="Dirigido" />
+                              <Button fx:id="btnGenerateGraph" mnemonicParsing="false" prefHeight="39.0" prefWidth="190.0" styleClass="btn-primary" text="▶ Generar Grafo" />
+                              <Label prefHeight="17.0" prefWidth="195.0" styleClass="stat-label" stylesheets="@styles.css" text="Aristas (formato u-v, separadas por coma) :" />
+                              <TextField fx:id="txtEdges" prefHeight="34.0" prefWidth="217.0" />
+                              <Button fx:id="btnAddEdgesGraph" mnemonicParsing="false" prefHeight="38.0" prefWidth="190.0" styleClass="btn-accent" text="▶ Agregar aristas" />
+                              <Button fx:id="btnRestartGraph" mnemonicParsing="false" prefHeight="38.0" prefWidth="190.0" style="-fx-background-color: #A30018;" styleClass="btn-ghost" text="Reiniciar" />
+                              <Label prefHeight="17.0" prefWidth="195.0" styleClass="section-label" stylesheets="@styles.css" text="Elemento para mostrar métodos:" />
+                              <TextField fx:id="txtElement" />
                               </children>
                            </VBox>
                            <VBox prefHeight="593.0" prefWidth="658.0" spacing="8.0" styleClass="panel">
                               <children>
-                                 <Canvas fx:id="canvasBTree" height="566.0" width="677.0" />
-                                 <HBox prefHeight="35.0" prefWidth="548.0" />
+                                 <HBox prefHeight="35.0" prefWidth="548.0">
+                                 <children>
+                                       <Canvas fx:id="canvasGraph" height="566.0" width="521.0" />
+                                    <TextArea fx:id="txtGraph" prefHeight="566.0" prefWidth="384.0" />
+                                 </children></HBox>
                               </children>
                            </VBox>
                         </items>
@@ -99,13 +113,12 @@
                               <HBox prefHeight="36.0" prefWidth="289.0" spacing="10.0">
                                  <children>
                                     <ComboBox fx:id="cbTree" prefHeight="27.0" prefWidth="195.0" />
-                                    <Button fx:id="btnPlayBst" mnemonicParsing="false" prefHeight="30.0" prefWidth="51.0" styleClass="btn-primary" text="▶" />
                                  </children>
                               </HBox>
                               <Separator prefHeight="16.0" prefWidth="290.0" />
-                              <Button fx:id="generateTree" mnemonicParsing="false" prefHeight="22.0" prefWidth="196.0" styleClass="btn-primary" text="▶ Generar árbol ejemplo" />
-                              <Button fx:id="addAristas" mnemonicParsing="false" prefHeight="22.0" prefWidth="198.0" styleClass="btn-accent" text="▶ Agregar aristas" />
-                              <Button fx:id="btnReset" mnemonicParsing="false" prefHeight="22.0" prefWidth="198.0" style="-fx-background-color: #A30018;" styleClass="btn-ghost" text="Reiniciar" />
+                              <Button fx:id="generateTree" mnemonicParsing="false" prefHeight="52.0" prefWidth="196.0" styleClass="btn-primary" text="▶ Generar árbol ejemplo" />
+                              <Button fx:id="addAristas" mnemonicParsing="false" prefHeight="48.0" prefWidth="198.0" styleClass="btn-accent" text="▶ Agregar aristas" />
+                              <Button fx:id="btnReset" mnemonicParsing="false" prefHeight="56.0" prefWidth="198.0" style="-fx-background-color: #A30018;" styleClass="btn-ghost" text="Reiniciar" />
                                <TextArea fx:id="txtOutput" editable="false" prefHeight="342.0" prefWidth="258.0" wrapText="true" />
                            </children>
                         </VBox>

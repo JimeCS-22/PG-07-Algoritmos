@@ -71,6 +71,8 @@ public class AdjacencyMatrixGraph<T extends Comparable<T>> implements Graph<T> {
     @Override
     public boolean containsEdge(T a, T b) throws GraphException, ListException {
         if(isEmpty())throw new GraphException("Adjacency Matrix Graph is Empty");
+        if(a == null || b == null)
+            return false;
         return !equals(adjancencyMatrix[indexOf(a)][indexOf(b)],(T)Integer.valueOf(0));
     }
 
@@ -396,5 +398,98 @@ public class AdjacencyMatrixGraph<T extends Comparable<T>> implements Graph<T> {
 
         return ((Number)value).intValue();
 
+    }
+    private Vertex<T> getVertex(T element) {
+        for (int i = 0; i < counter; i++)
+            if(equals(vertexList[i].data, element)) return vertexList[i];
+        return null; //no existe el vértice
+    }
+     /*5. public int totalEdges (T element): Devuelve el número total de aristas que
+tiene el vértice del elemento dado.*/
+
+    public int totalEdges(T element) throws ListException {
+        if (isEmpty()) throw new ListException("Adjacency List Graph is Empty");
+
+        if (!containsVertex(element)) throw new ListException("Adjacency List Graph Not Contains Vertex");
+
+        int totalEdges = 0; //El va a devolver el numero de aristas
+
+
+        int value = indexOf(element);//Encontramos la posicion del elemento
+
+
+        //Grafo no dirigido
+        if (!directed){
+
+            for (int i = 0; i < counter; i++) {
+                if (!equals(adjancencyMatrix[value][i], (T) Integer.valueOf(0))) {
+                    totalEdges++;
+                }
+            }
+
+        }else{//Grafo dirigido
+
+            // salida
+            for (int i = 0; i < counter; i++) {
+                if (!equals(adjancencyMatrix[value][i], (T) Integer.valueOf(0))) {
+                    totalEdges++;
+                }
+            }
+
+            // entrada
+            for (int i = 0; i < counter; i++) {
+                if (!equals(adjancencyMatrix[i][value], (T) Integer.valueOf(0))) {
+                    totalEdges++;
+                }
+            }
+
+        }
+
+
+        return totalEdges;
+    }
+    /*. public String getEdges (T element): Devuelve todas las aristas del vértice del
+elemento dado, Si el vértice no tiene aristas, deberá mostrar el mensaje: “The
+vertex has no edges”*/
+    public String getEdges(T element) throws GraphException, ListException {
+
+        if (isEmpty())
+            throw new ListException("Adjacency Matrix Graph is Empty");
+
+        if (!containsVertex(element))
+            throw new ListException("Adjacency Matrix Graph Not Contains Vertex");
+
+        int index = indexOf(element);
+
+        StringBuilder edges = new StringBuilder("Edges of " + element + ": ");
+
+        boolean hasEdges = false;
+
+        for (int j = 0; j < counter; j++) {
+
+            if (!equals(adjancencyMatrix[index][j], (T) Integer.valueOf(0))) {
+
+                edges.append("(")
+                        .append(element)
+                        .append(", ")
+                        .append(vertexList[j].data)
+                        .append(")");
+
+                // Mostrar el peso si no es 1
+                if (!equals(adjancencyMatrix[index][j], (T) Integer.valueOf(1))) {
+                    edges.append(" weight=")
+                            .append(adjancencyMatrix[index][j]);
+                }
+
+                edges.append(" ");
+
+                hasEdges = true;
+            }
+        }
+
+        if (!hasEdges)
+            return "The vertex has no edges";
+
+        return edges.toString();
     }
 }

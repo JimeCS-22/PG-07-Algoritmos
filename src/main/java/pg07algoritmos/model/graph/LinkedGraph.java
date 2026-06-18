@@ -411,4 +411,83 @@ public class LinkedGraph <T extends Comparable<T>> extends LinkedList<T> impleme
         return Integer.MAX_VALUE;
 
     }
+
+      /*5. public int totalEdges (T element): Devuelve el número total de aristas que
+tiene el vértice del elemento dado.*/
+
+    public int totalEdges(T element) throws GraphException, ListException {
+
+        if (isEmpty())
+            throw new GraphException("Linked Graph is Empty");
+
+        if (!containsVertex(element))
+            throw new GraphException("Linked Graph Not Contains Vertex");
+
+        int total = 0;
+
+        // Aristas de salida
+        Node<T> aux = getNode(element).neighbor;
+
+        while (aux != null) {
+            total++;
+            aux = aux.neighbor;
+        }
+
+        // Aristas de entrada
+        if (directed) {
+
+            int len = size();
+
+            for (int i = 1; i <= len; i++) {
+
+                Node<T> current = getNodeByIndex(i).neighbor;
+
+                while (current != null) {
+
+                    if (equals(current.data, element))
+                        total++;
+
+                    current = current.neighbor;
+                }
+            }
+        }
+
+        return total;
+    }
+    /*. public String getEdges (T element): Devuelve todas las aristas del vértice del
+elemento dado, Si el vértice no tiene aristas, deberá mostrar el mensaje: “The vertex has no edges”*/
+    public String getEdges(T element) throws GraphException, ListException {
+
+        if(isEmpty())
+            throw new GraphException("Linked Graph is Empty");
+
+        if(!containsVertex(element))
+            throw new GraphException("Vertex doesn't exist");
+
+        Node<T> aux = getNode(element).neighbor;
+
+        if(aux == null)
+            return "The vertex has no edges";
+
+        StringBuilder sb = new StringBuilder();
+
+        while(aux != null){
+
+            sb.append("(")
+                    .append(element)
+                    .append(", ")
+                    .append(aux.data)
+                    .append(")");
+
+            if(aux.weight != null){
+                sb.append(" weight=").append(aux.weight);
+            }
+
+            sb.append("\n");
+
+            aux = aux.neighbor;
+        }
+
+        return sb.toString();
+    }
 }
