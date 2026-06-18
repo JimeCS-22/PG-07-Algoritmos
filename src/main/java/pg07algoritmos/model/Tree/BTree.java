@@ -459,8 +459,7 @@ public class BTree<T extends Comparable<T>> implements Tree<T> {
 
         if(node.left  != null && node.right!= null)
             result.append("Dad: ").append(node.data).append("  Child: ")
-                    .append(node.left.data).append("  ").append(node.right.data).append("  ");
-        result.append("\n");
+                    .append(node.left.data).append("  ").append(node.right.data).append("  ").append("\n");
 
         printNodes2Child(node.left, result);
         printNodes2Child(node.right, result);
