@@ -15,7 +15,6 @@ import pg07algoritmos.model.graph.LinkedGraph;
 import pg07algoritmos.model.linkedList.ListException;
 import pg07algoritmos.model.stack.StackException;
 
-import java.util.List;
 import java.util.Random;
 
 
@@ -26,7 +25,13 @@ public class MainController {
     @FXML
     private ComboBox<String> cbTree;
     @FXML
-    private Canvas canvasTree;
+    private Canvas canvasTree1;
+    @FXML
+    private ComboBox<String> cbTreeMethods;
+    @FXML
+    private Canvas canvasTree2;
+    @FXML
+    private Canvas canvasTree3;
     @FXML
     private Button addAristas;
     @FXML
@@ -67,6 +72,7 @@ public class MainController {
     private GraphicsContext gcGraph;
     @FXML
     private TextField txtEdges;
+
 
     @FXML
     public void initialize(){
@@ -611,9 +617,9 @@ public class MainController {
         gc.strokeLine(x2, y2, xArrow1, yArrow1);
         gc.strokeLine(x2, y2, xArrow2, yArrow2);
     }
-    //------------- TREE ---------------
+    ///------------- TREE ---------------
     private void setupTree(){
-        gc = canvasTree.getGraphicsContext2D();
+        gc = canvasTree1.getGraphicsContext2D();
 
         random = new Random();
 
@@ -630,30 +636,67 @@ public class MainController {
         cbTree.getSelectionModel().selectFirst();
 
         generateTree.setOnAction(e->generateRandomTree());
+
+        cbTreeMethods.getItems().addAll(
+                "Ninguno",
+                "Método 11",
+                "Método 12",
+                "Método 13",
+                "Método 14"
+        );
+
+        cbTreeMethods.getSelectionModel().selectFirst();
     }
 
     private void generateRandomTree(){
 
-        String tipo = cbTree.getValue().toString();
+        String method = cbTreeMethods.getValue();
+
+        switch(method){
+
+            case "Ninguno":
+                generateNormalTree();
+                break;
+
+            case "Método 11":
+                drawMethod11();
+                break;
+
+            case "Método 12":
+                drawMethod12();
+                break;
+
+            case "Método 13":
+                drawMethod13();
+                break;
+
+            case "Método 14":
+                drawMethod14();
+                break;
+        }
+    }
+
+    private void generateNormalTree(){
+
+        String tipo = cbTree.getValue();
 
         switch (tipo){
 
             case "Árbol Binario":
-
                 generateBinaryTree();
                 break;
 
             case "BST":
-
                 generateBST();
                 break;
 
             case "AVL":
-
                 generateAVL();
                 break;
         }
 
+        clearCanvas(canvasTree2);
+        clearCanvas(canvasTree3);
     }
 
     private void generateBinaryTree(){
@@ -704,17 +747,16 @@ public class MainController {
 
     }
 
-
     private void drawBinaryTree() {
 
-        gc.clearRect(0, 0, canvasTree.getWidth(), canvasTree.getHeight());
+        gc.clearRect(0, 0, canvasTree1.getWidth(), canvasTree1.getHeight());
 
         drawBackground();
 
         TreePainter.drawSimpleNode(
                 gc,
                 bTree.root,
-                canvasTree.getWidth() / 2,
+                canvasTree1.getWidth() / 2,
                 60,
                 160,
                 true
@@ -723,14 +765,14 @@ public class MainController {
 
     private void drawBST() {
 
-        gc.clearRect(0, 0, canvasTree.getWidth(), canvasTree.getHeight());
+        gc.clearRect(0, 0, canvasTree1.getWidth(), canvasTree1.getHeight());
 
         drawBackground();
 
         TreePainter.drawSimpleNode(
                 gc,
                 bst.root,
-                canvasTree.getWidth() / 2,
+                canvasTree1.getWidth() / 2,
                 60,
                 160,
                 true
@@ -739,14 +781,14 @@ public class MainController {
 
     private void drawAVL() {
 
-        gc.clearRect(0, 0, canvasTree.getWidth(), canvasTree.getHeight());
+        gc.clearRect(0, 0, canvasTree1.getWidth(), canvasTree1.getHeight());
 
         drawBackground();
 
         TreePainter.drawTreeNode(
                 gc,
                 avl.root,
-                canvasTree.getWidth() / 2,
+                canvasTree1.getWidth() / 2,
                 60,
                 160,
                 avl,
@@ -761,28 +803,28 @@ public class MainController {
         gc.fillRect(
                 0,
                 0,
-                canvasTree.getWidth(),
-                canvasTree.getHeight()
+                canvasTree1.getWidth(),
+                canvasTree1.getHeight()
         );
 
         gc.setStroke(Color.web("#1B3554"));
 
-        for (int x = 0; x < canvasTree.getWidth(); x += 40) {
+        for (int x = 0; x < canvasTree1.getWidth(); x += 40) {
 
             gc.strokeLine(
                     x,
                     0,
                     x,
-                    canvasTree.getHeight()
+                    canvasTree1.getHeight()
             );
         }
 
-        for (int y = 0; y < canvasTree.getHeight(); y += 40) {
+        for (int y = 0; y < canvasTree1.getHeight(); y += 40) {
 
             gc.strokeLine(
                     0,
                     y,
-                    canvasTree.getWidth(),
+                    canvasTree1.getWidth(),
                     y
             );
         }
@@ -1048,7 +1090,269 @@ public class MainController {
 
     }
 
+    private void clearCanvas(Canvas canvas){
+
+        GraphicsContext gc =
+                canvas.getGraphicsContext2D();
+
+        gc.clearRect(
+                0,
+                0,
+                canvas.getWidth(),
+                canvas.getHeight()
+        );
+    }
 
 
+    private void drawMethod11(){
+
+        BTree<Integer> tree1 = new BTree<>();
+        BTree<Integer> tree2 = new BTree<>();
+
+        int size = random.nextInt(6) + 10; // 10-15 nodos
+
+        for(int i = 0; i < size; i++){
+            tree1.addBFS(random.nextInt(100) + 1);
+            tree2.addBFS(random.nextInt(100) + 1);
+        }
+
+        BTree<Integer> result =
+                tree1.bTreeSum(tree1, tree2);
+
+        drawTreeOnCanvas(tree1, canvasTree1);
+        drawTreeOnCanvas(tree2, canvasTree2);
+        drawTreeOnCanvas(result, canvasTree3);
+
+        txtOutput.setText(
+                "Método 11 - bTreeSum\n\n" +
+                        "Tree1:\n" + tree1 +
+                        "\n\nTree2:\n" + tree2 +
+                        "\n\nResultado:\n" + result
+        );
+    }
+
+    private void drawMethod12(){
+
+        BTree<Integer> tree = new BTree<>();
+
+        int size = random.nextInt(6) + 10;
+
+        for(int i = 0; i < size; i++){
+            tree.addBFS(random.nextInt(100) + 1);
+        }
+
+        BTree<Integer> result =
+                tree.btNodeSum(tree);
+
+        drawTreeOnCanvas(tree, canvasTree1);
+        drawTreeOnCanvas(result, canvasTree2);
+
+        canvasTree3.getGraphicsContext2D()
+                .clearRect(
+                        0,
+                        0,
+                        canvasTree3.getWidth(),
+                        canvasTree3.getHeight()
+                );
+
+        txtOutput.setText(
+                "Método 12 - btNodeSum\n\n" +
+                        "Original:\n" + tree +
+                        "\n\nResultado:\n" + result
+        );
+    }
+
+    private void drawMethod13(){
+
+        BTree<Integer> tree = new BTree<>();
+
+        int totalNodes = random.nextInt(8) + 8;
+
+        for(int i=0;i<totalNodes;i++){
+
+            if(tree.root == null){
+
+                tree.root = new BTreeNode<>(
+                        random.nextInt(100)+1
+                );
+
+            }else{
+
+                insertRandom(tree.root,
+                        random.nextInt(100)+1);
+            }
+        }
+
+        drawTreeOnCanvas(tree, canvasTree1);
+
+        tree.tighten();
+
+        drawTreeOnCanvas(tree, canvasTree2);
+
+        canvasTree3.getGraphicsContext2D()
+                .clearRect(
+                        0,
+                        0,
+                        canvasTree3.getWidth(),
+                        canvasTree3.getHeight()
+                );
+
+        txtOutput.setText(
+                "Método 13 - Tighten ejecutado"
+        );
+    }
+
+    private void insertRandom(
+            BTreeNode<Integer> node,
+            Integer value){
+
+        if(random.nextBoolean()){
+
+            if(node.left == null){
+
+                node.left = new BTreeNode<>(value);
+
+            }else{
+
+                insertRandom(node.left,value);
+            }
+
+        }else{
+
+            if(node.right == null){
+
+                node.right = new BTreeNode<>(value);
+
+            }else{
+
+                insertRandom(node.right,value);
+            }
+        }
+    }
+
+    private BTree<Integer> generateRandomABM(int levels){
+
+        BTree<Integer> tree = new BTree<>();
+
+        tree.root = generateABMNode(
+                levels,
+                random.nextInt(20)+1
+        );
+
+        return tree;
+    }
+
+    private BTreeNode<Integer> generateABMNode(
+            int level,
+            int parentValue){
+
+        if(level == 0)
+            return null;
+
+        if(level != 4 && random.nextDouble() < 0.3)
+            return null;
+
+        int value = parentValue;
+
+        BTreeNode<Integer> node =
+                new BTreeNode<>(value);
+
+        if(random.nextBoolean()){
+
+            node.left = generateABMNode(
+                    level - 1,
+                    value + random.nextInt(20)
+            );
+        }
+
+        if(random.nextBoolean()){
+
+            node.right = generateABMNode(
+                    level - 1,
+                    value + random.nextInt(20)
+            );
+        }
+
+        return node;
+    }
+
+    private void drawMethod14(){
+
+        BTree<Integer> tree1 =
+                generateRandomABM(4);
+
+        BTree<Integer> tree2 =
+                generateRandomABM(4);
+
+        BTree<Integer> result =
+                tree1.joinABM(tree1, tree2);
+
+        drawTreeOnCanvas(tree1, canvasTree1);
+        drawTreeOnCanvas(tree2, canvasTree2);
+
+        if(result != null)
+            drawTreeOnCanvas(result, canvasTree3);
+        else
+            clearCanvas(canvasTree3);
+
+        txtOutput.setText(
+                "isABM Tree1: "
+                        + tree1.isABM(tree1)
+                        + "\n"
+                        + "isABM Tree2: "
+                        + tree2.isABM(tree2)
+                        + "\n\n"
+                        + "JoinABM:\n"
+                        + result
+        );
+    }
+
+    private void drawBackground(GraphicsContext gc, Canvas canvas){
+
+        gc.setFill(Color.web("#071A2F"));
+
+        gc.fillRect(
+                0,
+                0,
+                canvas.getWidth(),
+                canvas.getHeight()
+        );
+
+        gc.setStroke(Color.web("#1B3554"));
+
+        for(int x=0;x<canvas.getWidth();x+=40){
+            gc.strokeLine(x,0,x,canvas.getHeight());
+        }
+
+        for(int y=0;y<canvas.getHeight();y+=40){
+            gc.strokeLine(0,y,canvas.getWidth(),y);
+        }
+    }
+
+    private void drawTreeOnCanvas(
+            BTree<Integer> tree,
+            Canvas canvas){
+
+        GraphicsContext gc =
+                canvas.getGraphicsContext2D();
+
+        gc.clearRect(
+                0,
+                0,
+                canvas.getWidth(),
+                canvas.getHeight()
+        );
+
+        drawBackground(gc, canvas);
+
+        TreePainter.drawSimpleNode(
+                gc,
+                tree.root,
+                canvas.getWidth()/2,
+                60,
+                160,
+                true
+        );
+    }
 
 }

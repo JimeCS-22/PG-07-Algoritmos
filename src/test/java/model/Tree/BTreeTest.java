@@ -6,6 +6,7 @@ package model.Tree;
 
 import org.junit.jupiter.api.Test;
 import pg07algoritmos.model.Tree.BTree;
+import pg07algoritmos.model.Tree.BTreeNode;
 import pg07algoritmos.model.Tree.TreeException;
 
 import java.util.Random;
@@ -76,6 +77,100 @@ class BTreeTest {
         }
 
     }
+
+    @Test
+    void testBTreeSum(){
+        System.out.println("Metodo 11 para la practica de examen:");
+        BTree<Integer> tree1 = new BTree<>();
+        BTree<Integer> tree2 = new BTree<>();
+
+        for(int i = 1; i <= 5; i++){
+            tree1.addBFS(i * 10);
+            tree2.addBFS(i);
+        }
+
+        System.out.println("Tree 1: " + tree1 + "\n");
+
+        System.out.println("Tree 2: " + tree2 + "\n");
+
+        BTree<Integer> result = tree1.bTreeSum(tree1, tree2);
+
+        System.out.println("Tree Sum" + result);
+    }
+
+    @Test
+    void testBtNodeSum(){
+        System.out.println("Metodo 12 para la practica de examen: " + "\n");
+        BTree<Integer> tree = new BTree<>();
+
+        tree.addBFS(10);
+        tree.addBFS(5);
+        tree.addBFS(8);
+        tree.addBFS(2);
+        tree.addBFS(3);
+
+        System.out.println("Original Tree: " + tree + "\n");
+
+        BTree<Integer> result = tree.btNodeSum(tree);
+
+        System.out.println("Node Sum Tree: " + result);
+    }
+
+    @Test
+    void testTighten(){
+        System.out.println("Metodo 13 para la practica de examen:" + "\n");
+        BTree<Integer> tree = new BTree<>();
+
+        tree.root = new BTreeNode<>(10);
+        tree.root.left = new BTreeNode<>(20);
+        tree.root.left.right = new BTreeNode<>(30);
+        tree.root.left.right.left = new BTreeNode<>(40);
+
+        System.out.println("Before Tighten: " + tree + "\n");
+        tree.tighten();
+
+        System.out.println("After Tighten: " + tree);
+    }
+
+    @Test
+    void testIsABM(){
+        System.out.println("Metodo 14.a para la practica de examen:" + "\n");
+        BTree<Integer> tree = new BTree<>();
+
+        tree.root = new BTreeNode<>(1);
+        tree.root.left = new BTreeNode<>(5);
+        tree.root.right = new BTreeNode<>(8);
+        tree.root.left.left = new BTreeNode<>(10);
+
+        System.out.println(tree);
+        System.out.println("Is ABM: " + tree.isABM(tree));
+    }
+
+    @Test
+    void testJoinABM(){
+        System.out.println("Metodo 14.b para la practica de examen:" + "\n");
+
+        BTree<Integer> tree1 = new BTree<>();
+
+        tree1.root = new BTreeNode<>(1);
+        tree1.root.left = new BTreeNode<>(4);
+        tree1.root.right = new BTreeNode<>(6);
+
+        BTree<Integer> tree2 = new BTree<>();
+
+        tree2.root = new BTreeNode<>(2);
+        tree2.root.left = new BTreeNode<>(7);
+        tree2.root.right = new BTreeNode<>(9);
+
+        System.out.println("Tree 1: " + tree1);
+        System.out.println("Tree 2: " + tree2);
+
+        BTree<Integer> result = tree1.joinABM(tree1, tree2);
+
+        System.out.println("Join ABM: " + result);
+    }
+
+
     @Test
     void testHeight(){
         BTree<Integer> bTree = new BTree<>();

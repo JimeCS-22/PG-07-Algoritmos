@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="703.0" prefWidth="1191.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pg07algoritmos.controller.MainController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="836.0" prefWidth="1481.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pg07algoritmos.controller.MainController">
     <top>
         <VBox prefHeight="62.0" prefWidth="1036.0" styleClass="header-bar" stylesheets="@styles.css" BorderPane.alignment="CENTER">
             <children>
@@ -48,7 +48,7 @@
         </VBox>
     </top>
     <center>
-        <TabPane fx:id="mainTabs" prefHeight="638.0" prefWidth="1141.0" styleClass="main-tabs" stylesheets="@styles.css" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <TabPane fx:id="mainTabs" prefHeight="641.0" prefWidth="1245.0" styleClass="main-tabs" stylesheets="@styles.css" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
             <tabs>
 
                <Tab text="Grafos">
@@ -100,7 +100,7 @@
                <!-- ... TAB 3: BST ... -->
             <Tab text="Arboles Binarios">
                <content>
-                  <SplitPane dividerPositions="0.24265323257766583" prefHeight="200.0" prefWidth="200.0">
+                  <SplitPane dividerPositions="0.18230925050641458" prefHeight="638.0" prefWidth="1481.0">
                      <items>
                         <VBox prefHeight="598.0" prefWidth="291.0" spacing="10.0" styleClass="panel">
                            <children>
@@ -110,12 +110,24 @@
                                  </font>
                               </Label>
                               <HBox />
-                              <HBox prefHeight="36.0" prefWidth="289.0" spacing="10.0">
+                              <HBox prefHeight="27.0" prefWidth="239.0" spacing="10.0">
                                  <children>
-                                    <ComboBox fx:id="cbTree" prefHeight="27.0" prefWidth="195.0" />
+                                    <ComboBox fx:id="cbTree" prefHeight="25.0" prefWidth="195.0" />
                                  </children>
                               </HBox>
-                              <Separator prefHeight="16.0" prefWidth="290.0" />
+                              <Separator prefHeight="16.0" prefWidth="239.0" />
+                              <Label styleClass="panel-title" text="Metodos">
+                                 <font>
+                                    <Font size="10.0" />
+                                 </font>
+                              </Label>
+                              <HBox />
+                              <HBox prefHeight="27.0" prefWidth="239.0" spacing="10.0">
+                                 <children>
+                                    <ComboBox fx:id="cbTreeMethods" prefHeight="25.0" prefWidth="195.0" />
+                                 </children>
+                              </HBox>
+                              <Separator prefHeight="16.0" prefWidth="239.0" />
                               <Button fx:id="generateTree" mnemonicParsing="false" prefHeight="52.0" prefWidth="196.0" styleClass="btn-primary" text="▶ Generar árbol ejemplo" />
                               <Button fx:id="addAristas" mnemonicParsing="false" prefHeight="48.0" prefWidth="198.0" styleClass="btn-accent" text="▶ Agregar aristas" />
                               <Button fx:id="btnReset" mnemonicParsing="false" prefHeight="56.0" prefWidth="198.0" style="-fx-background-color: #A30018;" styleClass="btn-ghost" text="Reiniciar" />
@@ -125,13 +137,27 @@
                         <VBox prefHeight="598.0" prefWidth="766.0" spacing="8.0" styleClass="panel">
                            <children>
                               <Label prefHeight="14.0" prefWidth="191.0" text="Visualización del árbol" />
-                               <ScrollPane fitToHeight="true" fitToWidth="true" pannable="true" prefHeight="610.0" prefWidth="842.0">
-
-                                   <content>
-                                       <Canvas fx:id="canvasTree" height="1000" width="1500.0" />
-                                   </content>
-
-                               </ScrollPane>                           </children>
+                              <HBox prefHeight="708.0" prefWidth="1180.0">
+                                 <children>
+                                     <ScrollPane fitToHeight="true" fitToWidth="true" pannable="true" prefHeight="548.0" prefWidth="410.0">
+      
+                                         <content>
+                                             <Canvas fx:id="canvasTree1" height="1000" width="1206.0" />
+                                         </content>
+      
+                                     </ScrollPane>
+                                    <ScrollPane fitToHeight="true" fitToWidth="true" pannable="true" prefHeight="548.0" prefWidth="410.0">
+                                       <content>
+                                          <Canvas fx:id="canvasTree2" height="1000" width="1206.0" />
+                                       </content>
+                                    </ScrollPane>
+                                    <ScrollPane fitToHeight="true" fitToWidth="true" pannable="true" prefHeight="548.0" prefWidth="410.0">
+                                       <content>
+                                          <Canvas fx:id="canvasTree3" height="1000" width="1206.0" />
+                                       </content>
+                                    </ScrollPane>
+                                 </children>
+                              </HBox>                           </children>
                         </VBox>
                      </items>
                   </SplitPane>
